@@ -1,6 +1,6 @@
 // connect to socket.io relay server
 var socket = io("https://relay.komodo-dev.library.illinois.edu");
-// var socket = io("https://localhost:3000");
+// var socket = io("http://localhost:3000");
 
 
 /**
@@ -23,19 +23,38 @@ var getParams = function (url) {
 };
 
 let params = getParams(window.location.href);
-console.log(params)
+console.log(params);
 
-
+//  asset list
+let assets = 
+[
+    {
+        "name" : "TESTING TESTING TESTING",
+        "url" : "https://raw.githubusercontent.com/davtamay/Models/master/KP(HO2)2_xyz_DAE_Convert.dae",
+        "scale" : 0.1
+    }
+]
+console.log(assets);
 
 //dummy ids
 var session_id = Number(params.session);
 var client_id = Number(params.client);
 var isTeacher = Number(params.teacher) || 0;
+var playback_id = Number(params.playback);
 
 // join session by id
 var joinIds = [session_id, client_id]
 socket.emit("join", joinIds);
 
+const startPlayback = function() {
+    console.log('playback started:', playback_id);
+    let playbackArgs = [client_id, session_id, playback_id]
+    socket.emit('playback', playbackArgs);
+}
+
+socket.on('playbackEnd', function() {
+    console.log('playback ended');
+})
 
 // To prevent the EMFILE error, clear the sendbuffer when reconnecting
 socket.on('reconnecting',function(){
@@ -54,7 +73,7 @@ socket.on('joined', function(client_id) {
 /////////////////
 const PLAYBACK_SAMPLE_RATE = 48000
 const MIC_SAMPLE_RATE = PLAYBACK_SAMPLE_RATE;
-const RECORD_BUFFER_SIZE = 8192;
+const RECORD_BUFFER_SIZE = 2048;
 
 let playContext = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
 let recordContext = new AudioContext({ sampleRate: MIC_SAMPLE_RATE });
@@ -101,37 +120,39 @@ let nextTime = 0;
 
 socket.on('micUpdate', function (data) {
 
-    let id = data.client_id;
+    let micClientId = data.client_id;
+
+    // if client leaves session, destroy audio buffer
 
     // if the client_id doesn't have a buffer
-    if (!clientAudioBuffers[id]) {
-        console.log('create new client audio buffer:', id);
-        clientAudioBuffers[id] = { stack: [], initScheduler: 0, nextTime: 0 };
+    if (!clientAudioBuffers[micClientId]) {
+        console.log('create new client audio buffer:', micClientId);
+        clientAudioBuffers[micClientId] = { stack: [], initScheduler: 0, nextTime: 0 };
     } 
     // push new mic data onto client buffer stack
     // after we have at least 10 chunks, start scheduling playback
     let farr = new Float32Array(data.buffer);
-    clientAudioBuffers[id].stack.push(farr);
-    if((clientAudioBuffers[id].initScheduler !=0) || (clientAudioBuffers[id].stack.length > 10)) {
-        scheduleBuffers(id);
-        clientAudioBuffers[id].initScheduler++;
+    clientAudioBuffers[micClientId].stack.push(farr);
+    if((clientAudioBuffers[micClientId].initScheduler !=0) || (clientAudioBuffers[micClientId].stack.length > 10)) {
+        scheduleBuffers(micClientId);
+        clientAudioBuffers[micClientId].initScheduler++;
     }
 });
 
 // mic data playback scheduler
-let scheduleBuffers = function(id) {
-    while(clientAudioBuffers[id].stack.length) {
-        farr = clientAudioBuffers[id].stack.shift();
+let scheduleBuffers = function(micClientId) {
+    while(clientAudioBuffers[micClientId].stack.length) {
+        farr = clientAudioBuffers[micClientId].stack.shift();
         let newClientPlaySource = playContext.createBufferSource();
-        clientAudioBuffers[id].buffer = playContext.createBuffer(1, RECORD_BUFFER_SIZE, PLAYBACK_SAMPLE_RATE);
-        clientAudioBuffers[id].buffer.getChannelData(0).set(farr, 0);
-        newClientPlaySource.buffer = clientAudioBuffers[id].buffer;
+        clientAudioBuffers[micClientId].buffer = playContext.createBuffer(1, RECORD_BUFFER_SIZE, PLAYBACK_SAMPLE_RATE);
+        clientAudioBuffers[micClientId].buffer.getChannelData(0).set(farr, 0);
+        newClientPlaySource.buffer = clientAudioBuffers[micClientId].buffer;
         newClientPlaySource.connect(playContext.destination);
-        if (clientAudioBuffers[id].nextTime == 0) {
-            clientAudioBuffers[id].nextTime = playContext.currentTime + 0.05;
+        if (clientAudioBuffers[micClientId].nextTime == 0) {
+            clientAudioBuffers[micClientId].nextTime = playContext.currentTime + 0.10;
         }
-        newClientPlaySource.start(clientAudioBuffers[id].nextTime);
-        clientAudioBuffers[id].nextTime += newClientPlaySource.buffer.duration;
+        newClientPlaySource.start(clientAudioBuffers[micClientId].nextTime);
+        clientAudioBuffers[micClientId].nextTime += newClientPlaySource.buffer.duration;
     }
 }
 
