@@ -25,28 +25,37 @@ var getParams = function (url) {
 let params = getParams(window.location.href);
 console.log(params);
 
-//  asset list
-var assets = 
-[
-    {
-        "name":"TEST11",
-        "url":"https://raw.githubusercontent.com/davtamay/Models/master/LAO_xyz_DAE_Convert.dae",
-        "scale":0.5
-    }
-    ,
-    {
-        "name":"TEST22",
-        "url":"https://raw.githubusercontent.com/davtamay/Models/master/KP(HO2)2_xyz_DAE_Convert.dae",
-        "scale":0.5
-    }
-]
-console.log(JSON.stringify(assets));
+
 
 //dummy ids
 var session_id = Number(params.session);
 var client_id = Number(params.client);
 var isTeacher = Number(params.teacher) || 0;
 var playback_id = Number(params.playback);
+
+
+//  receiving asset list using API
+var assets = [];
+var assets_url = "https://api.komodo-dev.library.illinois.edu/api/portal/labs/"+ session_id.toString() + "/assets";
+var request = new XMLHttpRequest();
+request.open("GET", assets_url, true);
+request.responseType = "json";
+request.send();
+
+request.onload = function(){
+    let assets_response = request.response;
+    for (idx = 0; idx<assets_response.length; idx++)
+    {
+        asset = new Object;
+        asset.name = assets_response[idx].asset_name.toString();
+        asset.url = assets_response[idx].path.toString();
+        asset.scale = 0.1;
+        assets.push(asset);
+    }
+    console.log(JSON.stringify(assets));
+}
+
+
 
 // join session by id
 var joinIds = [session_id, client_id]
