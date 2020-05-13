@@ -162,8 +162,10 @@
       };
     }
   }*/
-  XRManager.prototype.setGameInstance = function (gameInstance) {
-    if (!this.gameInstance) {
+  XRManager.prototype.setGameInstance = function (gameInstance) 
+  {
+    if (!this.gameInstance) 
+	{
       this.gameInstance = gameInstance;
       this.canvas = this.gameInstance.Module.canvas;
       this.resize();
@@ -172,16 +174,19 @@
       
       this.ctx = this.gameInstance.Module.ctx;
       // XXX THIS
-      this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) {
-        if (!fbo && thisXRMananger.vrSession && thisXRMananger.vrSession.renderState.baseLayer) {
+      this.ctx.bindFramebuffer = (oldBindFramebuffer => function bindFramebuffer(target, fbo) 
+	  {
+        if (!fbo && thisXRMananger.vrSession && thisXRMananger.vrSession.renderState.baseLayer) 
+		{
           fbo = thisXRMananger.vrSession.renderState.baseLayer.framebuffer;
           console.log('replaced', fbo);
         }
         
         return oldBindFramebuffer.call(this, target, fbo);
       })(this.ctx.bindFramebuffer);
-
-
+	}
+  }
+	  
 
 
   XRManager.prototype.unityProgressStart = new Promise(function (resolve) {
