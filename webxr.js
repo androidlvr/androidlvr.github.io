@@ -128,7 +128,7 @@
       this.perfStatus.dataset.enabled = this.perfStatus.dataset.enabled === 'true' ? false : true;
     }
   }
-  /*
+  
   XRManager.prototype.setGameInstance = function (gameInstance) {
     if (!this.gameInstance) {
       this.gameInstance = gameInstance;
@@ -161,8 +161,9 @@
         }
       };
     }
-  }*/
-  XRManager.prototype.setGameInstance = function (gameInstance) 
+  }
+ 
+ /*XRManager.prototype.setGameInstance = function (gameInstance) 
   {
     if (!this.gameInstance) 
 	{
@@ -186,7 +187,7 @@
       })(this.ctx.bindFramebuffer);
 	}
   }
-	  
+	  */
 
 
   XRManager.prototype.unityProgressStart = new Promise(function (resolve) {
