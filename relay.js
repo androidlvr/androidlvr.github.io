@@ -27,15 +27,27 @@ console.log(params);
 
 
 
-//dummy ids
+// ids and teacher flag passed to Unity
 var session_id = Number(params.session);
 var client_id = Number(params.client);
 var isTeacher = Number(params.teacher) || 0;
 var playback_id = Number(params.playback);
 
-
-//  receiving asset list using API
-var assets = [];
+// Assets
+// empty assets object to be populated and passed to Unity
+// object required because Unity cannot deserialize raw Arrays, they
+// have to be inside structs... 
+// See commented out asset object for example
+var assets = { 
+    list: [
+        // {
+        //     id: 12345,
+        //     name: "Test Asset Name",
+        //     url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Embedded/2CylinderEngine.gltf",
+        //     scale: 1
+        // }
+    ] 
+};
 var assets_url = "https://api.komodo-dev.library.illinois.edu/api/portal/labs/"+ session_id.toString() + "/assets";
 var request = new XMLHttpRequest();
 request.open("GET", assets_url, true);
@@ -47,12 +59,13 @@ request.onload = function(){
     for (idx = 0; idx<assets_response.length; idx++)
     {
         asset = new Object;
-        asset.name = assets_response[idx].asset_name.toString();
-        asset.url = assets_response[idx].path.toString();
-        asset.scale = 0.1;
-        assets.push(asset);
+        asset.id = assets_response[idx].asset_id;
+        asset.name = assets_response[idx].asset_name;
+        asset.url = assets_response[idx].path;
+        asset.scale = 1;
+        assets.list.push(asset);
     }
-    console.log(JSON.stringify(assets));
+    console.log("Retrieved assets:", JSON.stringify(assets));
 }
 
 
