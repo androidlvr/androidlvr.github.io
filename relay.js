@@ -102,5 +102,5 @@ var chat = io("https://relay.komodo-dev.library.illinois.edu/chat");
 chat.emit("join", joinIds);
 chat.on('micText', function(data) {
     console.log('micText:', data);
-    gameInstance.SendMessage("Instantiation Manager", 'Text_Refresh', data);
+    gameInstance.SendMessage("Instantiation Manager", 'Text_Refresh', JSON.stringify(data));
 })
