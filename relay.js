@@ -1,7 +1,8 @@
-// connect to socket.io relay server
-var socket = io("https://relay.komodo-dev.library.illinois.edu");
-// var socket = io("http://localhost:3000");
+const RELAY_BASE_URL = "https://relay.komodo-dev.library.illinois.edu/"
+// const RELAY_BASE_URL = "http://localhost:3000/"
 
+// connect to socket.io relay server
+var socket = io(RELAY_BASE_URL);
 
 /**
  * Get the URL parameters
@@ -90,17 +91,16 @@ socket.on('reconnecting',function(){
     socket.sendBuffer = [];
 });
 
-// clear client audio buffer on join to reset scheduling
 socket.on('joined', function(client_id) {
     console.log('client joined session:', client_id);
 });
 
 
 // text chat relay
-var chat = io("https://relay.komodo-dev.library.illinois.edu/chat");
-// var chat = io("http://localhost:3000/chat");
-
+var chat = io(RELAY_BASE_URL + 'chat');
 chat.emit("join", joinIds);
+
+// TODO(rob): wait on UnityProgress == 1
 chat.on('micText', function(data) {
     console.log('micText:', data);
     gameInstance.SendMessage("Instantiation Manager", 'Text_Refresh', JSON.stringify(data));
