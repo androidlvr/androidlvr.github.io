@@ -95,10 +95,15 @@ socket.on('joined', function(client_id) {
     console.log('client joined session:', client_id);
 });
 
+socket.on('disconnected', function(client_id) {
+    console.log('client diconnected from session:', client_id);
+})
+
 socket.on('state', function(data) {
     console.log('received state sync event:', data);
     gameInstance.SendMessage("Instantiation Manager", "SyncSessionState", JSON.stringify(data));
 });
+
 
 // text chat relay
 var chat = io(RELAY_BASE_URL + '/chat');
