@@ -76,11 +76,11 @@ request.onload = function(){
 var joinIds = [session_id, client_id]
 socket.emit("join", joinIds);
 
-const startPlayback = function() {
-    console.log('playback started:', playback_id);
-    let playbackArgs = [client_id, session_id, playback_id]
-    socket.emit('playback', playbackArgs);
-}
+// const startPlayback = function() {
+//     console.log('playback started:', playback_id);
+//     let playbackArgs = [client_id, session_id, playback_id]
+//     socket.emit('playback', playbackArgs);
+// }
 
 socket.on('playbackEnd', function() {
     console.log('playback ended');
