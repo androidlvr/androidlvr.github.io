@@ -63,8 +63,8 @@ request.onload = function(){
         asset.id = assets_response[idx].asset_id;
         asset.name = assets_response[idx].asset_name;
         asset.url = assets_response[idx].path;
-        asset.scale = assets_response[idx].scale || 1;
         asset.isWholeObject = Boolean(assets_response[idx].is_whole_object);
+        asset.scale = assets_response[idx].scale || 1;
         assets.list.push(asset);
     }
     console.log("Retrieved assets:", JSON.stringify(assets));
