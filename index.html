@@ -6,13 +6,14 @@
     <title> | Komodo</title>
     <meta name="description" content="">
     <link rel="icon" href="favicon.ico">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" type="text/css" href="styles/webxr.css">
+    <link rel="stylesheet" type="text/css" href="styles/webvr.css">
 
     <script src="Build/UnityLoader.js"></script>
     <script>
+      /* global UnityLoader, MozillaResearch */
+      (function () {
         UnityLoader.SystemInfo.mobile = false;  // Workaround to force `UnityLoader` to actually load on mobile.
-        window.gameInstance = UnityLoader.instantiate('gameContainer', 'Build/BUILD_TEST_2.json', {
+        window.gameInstance = UnityLoader.instantiate('gameContainer', 'Build/Build.json', {
           Module: {
             // `preserveDrawingBuffer` is needed for WebVR content to be mirrored to the `<canvas>`.
             webglContextAttributes: {
@@ -34,38 +35,42 @@
             document.dispatchEvent(new CustomEvent('UnityLoaded'));
           }
         }
+      })();
+
     </script>
+    <link rel="manifest" href="manifest.webmanifest">
   </head>
   <body>
-    <div id="loader">
-      <div id="loading" class="loading">Loading</div>
-      <div id="progress" class="progress"></div>
-    </div>
-
-    <div id="game">
-      <div id="gameContainer"></div>
-    </div>
-
-    <div id="instruction">
-      <div id="novr" class="panel center">
-        <h3>You&rsquo;ll need a <a href="https://developer.mozilla.com/topics/mixed-reality/">WebXR-enabled browser</a> and VR headset to fully enjoy this experience.</h3>
-        <p><img src="mousedrag.png" width="70" alt="Click-and-drag your mouse"></p>
-        <p>In the meantime, <strong><em>click and drag</em></strong> to have a look around!</p>
-        <p>
-          <button class="confirm">Continue</button>
-        </p>
+      <div id="loader">
+          <div id="loading" class="loading">Loading</div>
+          <div id="progress" class="progress"></div>
       </div>
-    </div>
 
-    <button id="enterxr" value="Enter VR"></button>
+      <div id="game">
+          <div id="gameContainer"></div>
+      </div>
 
-    <div id="performance" data-enabled="false"></div>
+      <div id="instruction">
+          <div id="novr" class="panel center">
+              <h3>You&rsquo;ll need a <a href="https://webvr.rocks/">WebVR-enabled browser</a> and VR headset to fully enjoy this experience.</h3>
+              <p><img src="mousedrag.png" width="70" alt="Click-and-drag your mouse"></p>
+              <p>In the meantime, <strong><em>click and drag</em></strong> to have a look around!</p>
+              <p>
+                  <button class="confirm">Continue</button>
+              </p>
+          </div>
+      </div>
 
-    <script src="vendor/gl-matrix-min.js"></script>
-    <script src="vendor/webxr-polyfill.min.js"></script>
-    <script src="webxr.js"></script>
-    <script src="socket.io.js"></script>
-    <script src="relay.js"></script>
+      <button id="entervr" value="Enter VR"></button>
+
+      <div id="performance" data-enabled="false"></div>
+
+      <script src="vendor/gl-matrix-min.js"></script>
+      <script src="vendor/webvr-polyfill.min.js"></script>
+      <script src="webvr.js"></script>
+
+      <script src="socket.io.js"></script>
+      <script src="relay.js"></script>
 
   </body>
 
